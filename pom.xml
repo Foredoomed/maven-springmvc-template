@@ -61,14 +61,6 @@
 				<version>7.4.Final</version>
 			</plugin>
 
-			<executions>
-				<execution>
-					<phase>install</phase>
-					<goals>
-						<goal>deploy</goal>
-					</goals>
-				</execution>
-			</executions>
 		</plugins>
 	</build>
 
