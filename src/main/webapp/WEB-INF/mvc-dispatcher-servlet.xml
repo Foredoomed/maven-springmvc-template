@@ -2,50 +2,25 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:task="http://www.springframework.org/schema/task"
 	xmlns:context="http://www.springframework.org/schema/context" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd 
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd">
-
-	<context:component-scan base-package="testmaven2.testmaven2" />
-
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix">
-			<value>/WEB-INF/views/</value>
-		</property>
-		<property name="suffix">
-			<value>.jsp</value>
-		</property>
-	</bean>
 	
-	
-	<context:property-placeholder location="classpath:application.properties"
-		ignore-unresolvable="true" />
-
-
-	<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
-		<property name="driverClass" value="${jdbc.driverClassName}" />
-		<property name="jdbcUrl" value="${jdbc.url}" />
-		<property name="username" value="${jdbc.username}" />
-		<property name="password" value="${jdbc.password}" />
-		<property name="idleConnectionTestPeriodInMinutes" value="60" />
-		<property name="idleMaxAgeInMinutes" value="240" />
-		<property name="maxConnectionsPerPartition" value="5" />
-		<property name="minConnectionsPerPartition" value="2" />
-		<property name="partitionCount" value="2" />
-		<property name="acquireIncrement" value="2" />
-		<property name="statementsCacheSize" value="50" />
-		<property name="releaseHelperThreads" value="3" />
-	</bean>
-
+	<mvc:annotation-driven />
+	<context:component-scan base-package="xxxxxxxxxxxxxxxx">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+	</context:component-scan>
 
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
-		<property name="packagesToScan" value="jp.co.shanon.mail" />
+		<property name="packagesToScan" value="xxxxxxxxxxxxx" />
 		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
@@ -57,7 +32,7 @@
 		<property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" />
 	</bean>
 
-	<jpa:repositories base-package="jp.co.shanon.mail" transaction-manager-ref="transactionManager"
+	<jpa:repositories base-package="xxxxxxxxxxxxx" transaction-manager-ref="transactionManager"
 		entity-manager-factory-ref="entityManagerFactory" />
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
@@ -65,4 +40,93 @@
 	</bean>
 
 	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
+	<beans profile="dev">
+
+		<context:property-placeholder ignore-resource-not-found="true"
+			location="classpath:application.dev.properties" />
+
+		<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+			<property name="driverClass" value="${jdbc.driverClassName}" />
+			<property name="jdbcUrl" value="${jdbc.url}" />
+			<property name="username" value="${jdbc.username}" />
+			<property name="password" value="${jdbc.password}" />
+			<property name="idleConnectionTestPeriodInMinutes" value="60" />
+			<property name="idleMaxAgeInMinutes" value="240" />
+			<property name="maxConnectionsPerPartition" value="5" />
+			<property name="minConnectionsPerPartition" value="2" />
+			<property name="partitionCount" value="2" />
+			<property name="acquireIncrement" value="2" />
+			<property name="statementsCacheSize" value="50" />
+			<property name="releaseHelperThreads" value="3" />
+		</bean>
+
+	</beans>
+
+	<beans profile="integration">
+
+		<context:property-placeholder ignore-resource-not-found="true"
+			location="classpath:application.integration.properties" />
+
+		<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+			<property name="driverClass" value="${jdbc.driverClassName}" />
+			<property name="jdbcUrl" value="${jdbc.url}" />
+			<property name="username" value="${jdbc.username}" />
+			<property name="password" value="${jdbc.password}" />
+			<property name="idleConnectionTestPeriodInMinutes" value="60" />
+			<property name="idleMaxAgeInMinutes" value="240" />
+			<property name="maxConnectionsPerPartition" value="5" />
+			<property name="minConnectionsPerPartition" value="2" />
+			<property name="partitionCount" value="2" />
+			<property name="acquireIncrement" value="2" />
+			<property name="statementsCacheSize" value="50" />
+			<property name="releaseHelperThreads" value="3" />
+		</bean>
+
+	</beans>
+
+	<beans profile="staging">
+
+		<context:property-placeholder ignore-resource-not-found="true"
+			location="classpath:application.staging.properties" />
+
+		<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+			<property name="driverClass" value="${jdbc.driverClassName}" />
+			<property name="jdbcUrl" value="${jdbc.url}" />
+			<property name="username" value="${jdbc.username}" />
+			<property name="password" value="${jdbc.password}" />
+			<property name="idleConnectionTestPeriodInMinutes" value="60" />
+			<property name="idleMaxAgeInMinutes" value="240" />
+			<property name="maxConnectionsPerPartition" value="5" />
+			<property name="minConnectionsPerPartition" value="2" />
+			<property name="partitionCount" value="2" />
+			<property name="acquireIncrement" value="2" />
+			<property name="statementsCacheSize" value="50" />
+			<property name="releaseHelperThreads" value="3" />
+		</bean>
+
+	</beans>
+
+	<beans profile="production">
+
+		<context:property-placeholder ignore-resource-not-found="true"
+			location="classpath:application.production.properties" />
+
+		<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+			<property name="driverClass" value="${jdbc.driverClassName}" />
+			<property name="jdbcUrl" value="${jdbc.url}" />
+			<property name="username" value="${jdbc.username}" />
+			<property name="password" value="${jdbc.password}" />
+			<property name="idleConnectionTestPeriodInMinutes" value="60" />
+			<property name="idleMaxAgeInMinutes" value="240" />
+			<property name="maxConnectionsPerPartition" value="5" />
+			<property name="minConnectionsPerPartition" value="2" />
+			<property name="partitionCount" value="2" />
+			<property name="acquireIncrement" value="2" />
+			<property name="statementsCacheSize" value="50" />
+			<property name="releaseHelperThreads" value="3" />
+		</bean>
+
+	</beans>
+
 </beans>
