@@ -1,13 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>maven-spring-template</groupId>
-	<artifactId>maven-spring-template</artifactId>
+	<groupId>test</groupId>
+	<artifactId>test</artifactId>
 	<packaging>war</packaging>
-	<version>1.0-SNAPSHOT</version>
-	<name>maven-spring-template</name>
-	<url>http://maven.apache.org</url>
+	<version>0.0.1</version>
+
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,15 +21,17 @@
 		<httpclient.version>4.3.1</httpclient.version>
 		<commons-lang3.version>3.1</commons-lang3.version>
 		<joda-time.version>2.3</joda-time.version>
-		<!-- 
-		<jackson.version>2.2.3</jackson.version>
-		 -->
 		<gson.version>2.2.4</gson.version>
 		<commons-io.version>2.4</commons-io.version>
 		<dom4j.version>1.6.1</dom4j.version>
-		<spring-data-jpa.version>1.4.3.RELEASE</spring-data-jpa.version>
+		<spring-data-jpa.version>1.5.0.RELEASE</spring-data-jpa.version>
 		<hibernate.version>4.3.0.Final</hibernate.version>
 		<bonecp.version>0.8.0.RELEASE</bonecp.version>
+		<testng.version>6.8.7</testng.version>
+		<aspectj.version>1.7.4</aspectj.version>
+		<janino.version>2.6.1</janino.version>
+		<javax.servlet.version>3.1.0</javax.servlet.version>
+		<jackson.version>1.9.7</jackson.version>
 	</properties>
 
 	<dependencies>
@@ -97,6 +97,12 @@
 			<artifactId>spring-jdbc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -156,26 +162,6 @@
 			<artifactId>joda-time</artifactId>
 			<version>${joda-time.version}</version>
 		</dependency>
-		
-		<!-- 
-
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-jaxb-annotations</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		
-		 -->
 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -202,11 +188,36 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.janino</groupId>
+			<artifactId>janino</artifactId>
+			<version>${janino.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${javax.servlet.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 
 		<plugins>
-         <!-- compiler plugin, setting the JDK version -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -218,7 +229,6 @@
 				</configuration>
 			</plugin>
 
-         <!-- war packaged plugin, set the war without the version number of the package name -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -229,8 +239,64 @@
 				</configuration>
 			</plugin>
 
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.1</version>
+				<executions>
+					<execution>
+						<id>tomcat-run</id>
+						<goals>
+							<goal>exec-war-only</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<path>/MailExchanger</path>
+							<finalName>${project.artifactId}.jar</finalName>
+							<serverXml>src/main/resources/tomcat/server.xml</serverXml>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<configuration>
+					<formats>
+						<format>html</format>
+						<format>xml</format>
+					</formats>
+					<instrumentation>
+						<excludes>
+							<exclude>**/base/*.class</exclude>
+							
+						</excludes>
+					</instrumentation>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>cobertura</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.15</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<inputEncoding>UTF-8</inputEncoding>
+					<outputEncoding>UTF-8</outputEncoding>
+					<argLine>-Xmx256M</argLine>
+					<argLine>-XX:-UseSplitVerifier -Dfile.encoding=UTF-8</argLine>
+				</configuration>
+			</plugin>
 
 		</plugins>
 	</build>
-
 </project>
